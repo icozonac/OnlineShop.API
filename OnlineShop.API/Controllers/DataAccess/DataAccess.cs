@@ -146,5 +146,74 @@ namespace OnlineShop.API.Controllers.DataAccess
             }
             return products;
         }
+
+        public Product GetProduct(int id)
+        {
+            var product = new Product();
+            using (SqlConnection connection = new(dbConnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                string query = "SELECT * FROM Products WHERE ProductId=" + id + ";";
+                command.CommandText = query;
+                connection.Open();
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    product.Id = (int)reader["ProductId"];
+                    product.Title = (string)reader["Title"];
+                    product.Description = (string)reader["Description"];
+                    product.Price = (double)reader["Price"];
+                    product.Quantity = (int)reader["Quantity"];
+                    product.ImageName = (string)reader["ImageName"];
+
+                    var categoryid = (int)reader["CategoryId"];
+                    product.ProductCategory = GetProductCategory(categoryid);
+
+                    var offerid = (int)reader["OfferId"];
+                    product.Offer = GetOffer(offerid);
+                }
+            }
+            return product;
+        }
+        
+        public bool InsertUser(User user)
+        {
+            using (SqlConnection connection = new(dbConnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+
+                string query = "SELECT COUNT(*) FROM Users WHERE Email='" + user.Email + "';";
+                command.CommandText = query;
+
+                int count = (int)command.ExecuteScalar();
+                if(count > 0)
+                {
+                    connection.Close();
+                    return false;
+                }
+
+                query = "INSERT INTO Users(FirstName, LastName, Adress, Mobile, Email, Password, CreatedAt, ModifiedAt) values (@fn, @ln, @add, @mb, @em, @pwd, @cat, @mat); ";
+                command.CommandText = query;
+
+                command.Parameters.Add("@fn", System.Data.SqlDbType.NVarChar).Value = user.FirstName;
+                command.Parameters.Add("@ln", System.Data.SqlDbType.NVarChar).Value = user.LastName;
+                command.Parameters.Add("@add", System.Data.SqlDbType.NVarChar).Value = user.Address;
+                command.Parameters.Add("@mb", System.Data.SqlDbType.NVarChar).Value = user.Mobile;
+                command.Parameters.Add("@em", System.Data.SqlDbType.NVarChar).Value = user.Email;
+                command.Parameters.Add("@pwd", System.Data.SqlDbType.NVarChar).Value = user.Password;
+                command.Parameters.Add("@cat", System.Data.SqlDbType.DateTime).Value = user.CreatedDate;
+                command.Parameters.Add("@mat", System.Data.SqlDbType.DateTime).Value = user.ModifiedDate;
+
+                command.ExecuteNonQuery();
+
+            }   
+            return true;
+        }
     }
 }
