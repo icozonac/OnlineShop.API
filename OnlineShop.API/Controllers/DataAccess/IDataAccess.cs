@@ -10,5 +10,12 @@ namespace OnlineShop.API.Controllers.DataAccess
         List<Product> GetProducts(string category, string subcategory, int count);
         Product GetProduct(int id);
         bool InsertUser(User user);
+        string IsUserPresent(string email, string password);
+        void InsertReview(Review review);
+        List<Review> GetProductReviews(int productId);
+        User GetUser(int id);
+
+
+
     }
 }

@@ -52,10 +52,34 @@ namespace OnlineShop.API.Controllers
 
 
           string? message;
-          if (result) message = "inserted";
-          else message = "email not available";
+          if (result) message = "Inserted";
+          else message = "Email not available";
           return Ok(message);
             
         }
+
+        [HttpPost("LoginUser")]
+        public IActionResult LoginUser([FromBody] User user)
+        {
+            var token = dataAccess.IsUserPresent(user.Email, user.Password);
+            if (token == "") token = "invalid";
+            return Ok(token);
+        }
+
+        [HttpPost("InsertReview")]
+        public IActionResult InsertReview([FromBody] Review review)
+        {
+            review.CreatedAt = DateTime.Now.ToString(DateFormat);
+            dataAccess.InsertReview(review);
+            return Ok("Inserted");
+        }
+
+        [HttpGet("GetProductReviews/{productId}")]
+        public IActionResult GetProductReviews(int productId)
+        {
+            var reviews = dataAccess.GetProductReviews(productId);
+            return Ok(reviews);
+        }
+
     }
 }
