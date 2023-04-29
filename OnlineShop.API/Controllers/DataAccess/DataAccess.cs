@@ -381,5 +381,103 @@ namespace OnlineShop.API.Controllers.DataAccess
             }
             return user;
         }
+
+        public bool InsertCartItem(int userId, int productId)
+        {
+            using (SqlConnection connection = new(dbConnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+
+                connection.Open();
+                string query = "SELECT COUNT(*) FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                command.CommandText = query;
+
+                int count = (int)command.ExecuteScalar();
+                if(count == 0)
+                {
+                    query = "INSERT INTO Carts (UserId, Ordered, OrderedOn) VALUES (" + userId + ", 'false', '');";
+                    command.CommandText = query;
+                    command.ExecuteNonQuery();
+                }
+
+                query ="SELECT CartId FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                command.CommandText = query;
+                int cartId = (int)command.ExecuteScalar();
+
+                query = "INSERT INTO CartItems (CartId, ProductId) VALUES (" + cartId + ", " + productId + ");";
+                command.CommandText = query;
+                command.ExecuteNonQuery();
+
+
+                return true;
+
+            }
+            
+
+        }
+
+        public Cart GetActiveCartOfUser(int userId)
+        {
+            var cart = new Cart();
+            using (SqlConnection connection = new(dbConnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                command.CommandText = query;
+
+                int count = (int)command.ExecuteScalar();
+                if(count == 0)
+                {
+                    return cart;
+                }
+
+                query = "SELECT CartId FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                command.CommandText = query;
+
+                int cartId = (int)command.ExecuteScalar();
+
+                query = "SELECT * FROM CartItems WHERE CartId=" + cartId + ";";
+                command.CommandText = query;
+
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    CartItem item = new()
+                    {
+                        Id = (int)reader["CartItemId"],
+                        Product = GetProduct((int)reader["ProductId"])
+                    };
+                    cart.CartItems.Add(item);
+                }
+
+                cart.Id = cartId;
+                cart.User = GetUser(userId);
+                cart.Ordered = false;
+                cart.OrderedOn = "";
+
+
+            }
+            return cart;
+        }
+
+        public Cart GetCart(int cartId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Cart> GetAllPreviousCartsOfUser(int userId)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

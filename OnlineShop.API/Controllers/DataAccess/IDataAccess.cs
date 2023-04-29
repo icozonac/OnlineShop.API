@@ -14,6 +14,10 @@ namespace OnlineShop.API.Controllers.DataAccess
         void InsertReview(Review review);
         List<Review> GetProductReviews(int productId);
         User GetUser(int id);
+        bool InsertCartItem(int userId, int productId);
+        Cart GetActiveCartOfUser(int userId);
+        Cart GetCart(int cartId);
+        List<Cart> GetAllPreviousCartsOfUser(int userId);
 
 
 

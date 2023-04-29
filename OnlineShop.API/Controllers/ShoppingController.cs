@@ -81,5 +81,19 @@ namespace OnlineShop.API.Controllers
             return Ok(reviews);
         }
 
+        [HttpPost("InsertCartItem/{userId}/{productId}")]
+        public IActionResult InsertCartItem(int userId, int productId)
+        {
+            var result = dataAccess.InsertCartItem(userId, productId);
+            return Ok(result ? "inserted" : "not inserted");
+        }
+
+        [HttpGet("GetActiveCartOfUser/{id}")]
+        public IActionResult GetActiveCartOfUser(int id)
+        {
+            var result = dataAccess.GetActiveCartOfUser(id);
+            return Ok(result);
+        }
+
     }
 }
