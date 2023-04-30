@@ -18,6 +18,9 @@ namespace OnlineShop.API.Controllers.DataAccess
         Cart GetActiveCartOfUser(int userId);
         Cart GetCart(int cartId);
         List<Cart> GetAllPreviousCartsOfUser(int userId);
+        List<PaymentMethod> GetPaymentMethods();
+        int InsertPayment(Payment payment);
+        int InsertOrder(Order order);
 
 
 
