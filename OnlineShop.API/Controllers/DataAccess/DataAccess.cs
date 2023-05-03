@@ -586,10 +586,10 @@ namespace OnlineShop.API.Controllers.DataAccess
                 command.CommandText = query;
                 command.Parameters.Add("@pmid", System.Data.SqlDbType.Int).Value = payment.PaymentMethod.Id;
                 command.Parameters.Add("@uid", System.Data.SqlDbType.Int).Value = payment.User.Id;
-                command.Parameters.Add("@ta", System.Data.SqlDbType.NVarChar).Value = payment.TotalAmount;
-                command.Parameters.Add("@sc", System.Data.SqlDbType.NVarChar).Value = payment.ShipingCharges;
-                command.Parameters.Add("@ar", System.Data.SqlDbType.NVarChar).Value = payment.AmountReduced;
-                command.Parameters.Add("@ap", System.Data.SqlDbType.NVarChar).Value = payment.AmountPaid;
+                command.Parameters.Add("@ta", System.Data.SqlDbType.Float).Value = payment.TotalAmount;
+                command.Parameters.Add("@sc", System.Data.SqlDbType.Float).Value = payment.ShipingCharges;
+                command.Parameters.Add("@ar", System.Data.SqlDbType.Float).Value = payment.AmountReduced;
+                command.Parameters.Add("@ap", System.Data.SqlDbType.Float).Value = payment.AmountPaid;
                 command.Parameters.Add("@cat", System.Data.SqlDbType.NVarChar).Value = payment.CreatedAt;
 
                 connection.Open();
