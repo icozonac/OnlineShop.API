@@ -125,5 +125,12 @@ namespace OnlineShop.API.Controllers
             return Ok(id.ToString());
         }
 
+        [HttpPost("RemoveCartItem/{productId}/{userId}")]
+        public IActionResult RemoveCartItem(int productId, int userId)
+        {
+            dataAccess.RemoveCartItem(productId, userId);
+            return Ok("Removed");
+        }
+
     }
 }

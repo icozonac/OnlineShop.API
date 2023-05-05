@@ -649,5 +649,41 @@ namespace OnlineShop.API.Controllers.DataAccess
 
             return value;
         }
+
+        public void RemoveCartItem(int productId, int userId)
+        {
+            using (SqlConnection connection = new(dbConnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                connection.Open();
+
+
+                string query = "SELECT COUNT(*) FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                command.CommandText = query;
+
+                int count = (int)command.ExecuteScalar();
+                if (count > 0)
+                {
+                    query = "SELECT CartId FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                    command.CommandText = query;
+                    SqlDataReader reader = command.ExecuteReader();
+                    int cartId = 0;
+                    while (reader.Read())
+                    {
+                        cartId = (int)reader["CartId"];
+                    }
+                    reader.Close();
+                    query = "DELETE FROM CartItems WHERE CartId=" + cartId + " AND ProductId=" + productId + ";";
+                    command.CommandText = query;
+                    command.ExecuteNonQuery();
+                }
+
+
+
+            }
+        }
     }
 }

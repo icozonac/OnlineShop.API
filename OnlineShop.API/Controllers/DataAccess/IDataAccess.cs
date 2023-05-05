@@ -21,6 +21,7 @@ namespace OnlineShop.API.Controllers.DataAccess
         List<PaymentMethod> GetPaymentMethods();
         int InsertPayment(Payment payment);
         int InsertOrder(Order order);
+        void RemoveCartItem(int productId, int userId);
 
 
 
