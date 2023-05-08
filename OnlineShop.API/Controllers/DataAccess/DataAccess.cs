@@ -419,6 +419,42 @@ namespace OnlineShop.API.Controllers.DataAccess
 
         }
 
+        public void RemoveCartItem(int productId, int userId)
+        {
+            using (SqlConnection connection = new(dbConnection))
+            {
+                SqlCommand command = new()
+                {
+                    Connection = connection
+                };
+                connection.Open();
+
+
+                string query = "SELECT COUNT(*) FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                command.CommandText = query;
+
+                int count = (int)command.ExecuteScalar();
+                if (count > 0)
+                {
+                    query = "SELECT CartId FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
+                    command.CommandText = query;
+                    SqlDataReader reader = command.ExecuteReader();
+                    int cartId = 0;
+                    while (reader.Read())
+                    {
+                        cartId = (int)reader["CartId"];
+                    }
+                    reader.Close();
+                    query = "DELETE FROM CartItems WHERE CartId=" + cartId + " AND ProductId=" + productId + ";";
+                    command.CommandText = query;
+                    command.ExecuteNonQuery();
+                }
+
+
+
+            }
+        }
+
         public Cart GetActiveCartOfUser(int userId)
         {
             var cart = new Cart();
@@ -640,50 +676,26 @@ namespace OnlineShop.API.Controllers.DataAccess
                     query = "SELECT TOP 1 Id FROM Orders ORDER BY Id DESC;";
                     command.CommandText = query;
                     value = (int)command.ExecuteScalar();
+
                 }
                 else
                 {
                     value = 0;
                 }
-            }
 
-            return value;
-        }
-
-        public void RemoveCartItem(int productId, int userId)
-        {
-            using (SqlConnection connection = new(dbConnection))
-            {
-                SqlCommand command = new()
+                foreach (CartItem cartItem in order.Cart.CartItems)
                 {
-                    Connection = connection
-                };
-                connection.Open();
-
-
-                string query = "SELECT COUNT(*) FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
-                command.CommandText = query;
-
-                int count = (int)command.ExecuteScalar();
-                if (count > 0)
-                {
-                    query = "SELECT CartId FROM Carts WHERE UserId=" + userId + " AND Ordered= 'false' ; ";
-                    command.CommandText = query;
-                    SqlDataReader reader = command.ExecuteReader();
-                    int cartId = 0;
-                    while (reader.Read())
-                    {
-                        cartId = (int)reader["CartId"];
-                    }
-                    reader.Close();
-                    query = "DELETE FROM CartItems WHERE CartId=" + cartId + " AND ProductId=" + productId + ";";
+                    query = "UPDATE Products SET Quantity=Quantity-1 WHERE ProductId=" + cartItem.Product.Id + ";";
                     command.CommandText = query;
                     command.ExecuteNonQuery();
                 }
 
 
-
             }
+
+            return value;
         }
+
+       
     }
 }
